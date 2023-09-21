@@ -4,7 +4,10 @@ import { AuthenticatedRequest } from '@/middlewares';
 import { ticketsService } from '@/services';
 
 export async function getTicketsFromUser(req: AuthenticatedRequest, res: Response) {
-  return res.send(httpStatus.OK);
+  const { userId } = req;
+
+  const tickets = await ticketsService.getTicketsFromUser(userId);
+  return res.status(httpStatus.OK).send(tickets);
 }
 
 export async function getTicketsType(req: AuthenticatedRequest, res: Response) {

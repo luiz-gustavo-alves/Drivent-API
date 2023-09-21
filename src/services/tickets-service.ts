@@ -5,8 +5,13 @@ import { conflictError, notFoundError } from '@/errors';
 export type CreateTicket = Pick<Ticket, 'ticketTypeId'>;
 export type TicketWithTypeDetails = Ticket & { TicketType: TicketType };
 
-async function getTicketsFromUser() {
-  return;
+async function getTicketsFromUser(userId: number) {
+  const { ticketByEnrollment } = await validateTicketEnrollment(userId);
+
+  if (!ticketByEnrollment) throw notFoundError('No ticket from user enrollment');
+  const ticketType = await ticketsRepository.findTicketTypeById(ticketByEnrollment.ticketTypeId);
+
+  return { ...ticketByEnrollment, TicketType: ticketType };
 }
 
 async function getTicketsType(): Promise<TicketType[]> {
@@ -20,16 +25,21 @@ async function createTicket(params: CreateTicket, userId: number): Promise<Ticke
   const ticketType = await ticketsRepository.findTicketTypeById(ticketTypeId);
   if (!ticketType) throw notFoundError('No tickets found from requested search.');
 
+  const { enrollment, ticketByEnrollment } = await validateTicketEnrollment(userId);
+
+  if (ticketByEnrollment) throw conflictError('There is already a ticket from user enrollment');
+
+  const ticket = await ticketsRepository.createTicket(ticketTypeId, enrollment.id);
+  return { ...ticket, TicketType: ticketType };
+}
+
+async function validateTicketEnrollment(userId: number) {
   const enrollment = await enrollmentRepository.findEnrollmentByUserId(userId);
   if (!enrollment) throw notFoundError('No enrollments found from user.');
 
-  const enrollmentId = enrollment.id;
+  const ticketByEnrollment = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
 
-  const duplicateEnrollment = await ticketsRepository.findTicketByEnrollmentId(enrollmentId);
-  if (duplicateEnrollment) throw conflictError('There is already a ticket from user enrollment');
-
-  const ticket = await ticketsRepository.createTicket(ticketTypeId, enrollmentId);
-  return { ...ticket, TicketType: ticketType };
+  return { enrollment, ticketByEnrollment };
 }
 
 export const ticketsService = {
