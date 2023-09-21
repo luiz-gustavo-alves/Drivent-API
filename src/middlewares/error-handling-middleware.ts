@@ -58,10 +58,6 @@ export function handleApplicationErrors(
     return res.status(httpStatus.BAD_REQUEST).send(err.message);
   }
 
-  if (err.name === 'TicketsNotFoundEror') {
-    return res.status(httpStatus.BAD_REQUEST).send(err.message);
-  }
-
   if (err.hasOwnProperty('status') && err.name === 'RequestError') {
     return res.status((err as RequestError).status).send({
       message: err.message,
