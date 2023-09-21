@@ -8,7 +8,8 @@ export async function getTicketsFromUser(req: AuthenticatedRequest, res: Respons
 }
 
 export async function getTicketsType(req: AuthenticatedRequest, res: Response) {
-  return res.send(httpStatus.OK);
+  const ticketsType = await ticketsService.getTicketsType();
+  return res.status(httpStatus.OK).send(ticketsType);
 }
 
 export async function postCreateTicket(req: AuthenticatedRequest, res: Response) {

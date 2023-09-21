@@ -9,8 +9,9 @@ async function getTicketsFromUser() {
   return;
 }
 
-async function getTicketsType() {
-  return;
+async function getTicketsType(): Promise<TicketType[]> {
+  const ticketsType = await ticketsRepository.findTicketsType();
+  return ticketsType;
 }
 
 async function createTicket(params: CreateTicket, userId: number): Promise<TicketWithTypeDetails> {
