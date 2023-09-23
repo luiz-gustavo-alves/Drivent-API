@@ -1,14 +1,15 @@
 import { enrollmentRepository, ticketsRepository, paymentRepository } from '@/repositories';
 import { notFoundError, unauthorizedError } from '@/errors';
 
+async function getTicketPaymentDetails(ticketId: number, userId: number) {
+  await validateTicketAndEnrollment(ticketId, userId);
+  return await paymentRepository.getPaymentByTicketId(ticketId);
+}
+
 async function makeTicketPayment(params: CreateMakeTicketPayment, userId: number) {
   const { ticketId } = params;
 
-  const ticket = await ticketsRepository.findTicketById(ticketId);
-  if (!ticket) throw notFoundError('No ticket found from requested search.');
-
-  const enrollment = await enrollmentRepository.findEnrollmentByUserId(userId);
-  if (ticket.enrollmentId !== enrollment.id) throw unauthorizedError();
+  const { ticket } = await validateTicketAndEnrollment(ticketId, userId);
 
   const ticketType = await ticketsRepository.findTicketTypeById(ticket.ticketTypeId);
   const { price } = ticketType;
@@ -24,6 +25,16 @@ async function makeTicketPayment(params: CreateMakeTicketPayment, userId: number
   return await paymentRepository.createMakeTicketPayment(paymentParams);
 }
 
+async function validateTicketAndEnrollment(ticketId: number, userId: number) {
+  const ticket = await ticketsRepository.findTicketById(ticketId);
+  if (!ticket) throw notFoundError('No ticket found from requested search.');
+
+  const enrollment = await enrollmentRepository.findEnrollmentByUserId(userId);
+  if (ticket.enrollmentId !== enrollment.id) throw unauthorizedError();
+
+  return { ticket, enrollment };
+}
+
 type CardDataParams = {
   issuer: string;
   number: string;
@@ -37,6 +48,9 @@ export type CreateMakeTicketPayment = CardDataParams & {
   cardData: CardDataParams;
 };
 
+export type GetTicketPaymentDetails = Pick<CreateMakeTicketPayment, 'ticketId'>;
+
 export const paymentService = {
+  getTicketPaymentDetails,
   makeTicketPayment,
 };

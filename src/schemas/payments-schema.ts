@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { CreateMakeTicketPayment } from '@/services';
+import { CreateMakeTicketPayment, GetTicketPaymentDetails } from '@/services';
 
 const numberValidationSchema = Joi.string().min(13).max(16).custom(joiValidateNumberString).required();
 
@@ -7,7 +7,7 @@ const expirationDateSchema = Joi.string().custom(joiExpirationDateValidation).re
 
 const cvvValidationSchema = Joi.string().length(3).custom(joiValidateNumberString).required();
 
-export const paymentSchema = Joi.object<CreateMakeTicketPayment>({
+export const paymentBodySchema = Joi.object<CreateMakeTicketPayment>({
   ticketId: Joi.number().greater(0).required(),
   cardData: Joi.object({
     issuer: Joi.string().required(),
@@ -16,6 +16,10 @@ export const paymentSchema = Joi.object<CreateMakeTicketPayment>({
     expirationDate: expirationDateSchema,
     cvv: cvvValidationSchema,
   }).required(),
+});
+
+export const paymentQuerySchema = Joi.object<GetTicketPaymentDetails>({
+  ticketId: Joi.number().greater(0).required(),
 });
 
 function joiValidateNumberString(value: string, helpers: Joi.CustomHelpers<string>) {
