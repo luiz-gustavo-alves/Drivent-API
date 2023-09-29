@@ -1,3 +1,9 @@
 import { prisma } from '@/config';
 
-export const prismaRepository = {};
+async function findAllHotels() {
+  return await prisma.hotel.findMany();
+}
+
+export const hotelsRepository = {
+  findAllHotels,
+};
