@@ -1,18 +1,23 @@
 import { ticketsRepository, hotelsRepository } from '@/repositories';
 import { validateTicketEnrollment } from '@/utils/validate-utils';
-import { paymentRequiredError } from '@/errors';
+import { notFoundError, paymentRequiredError } from '@/errors';
 
 async function getAllHotels(userId: number) {
   await ticketErrorHandler(userId);
 
   const hotels = await hotelsRepository.findAllHotels();
+  if (!hotels) throw notFoundError('No hotels found.');
+
   return hotels;
 }
 
-async function getHotelById(hotelId: number, userId: number) {
+async function getHotelRooms(hotelId: number, userId: number) {
   await ticketErrorHandler(userId);
 
-  return;
+  const hotelRooms = await hotelsRepository.findHotelRooms(hotelId);
+  if (hotelRooms.Rooms.length === 0) throw notFoundError('No hotel rooms found.');
+
+  return hotelRooms;
 }
 
 async function ticketErrorHandler(userId: number) {
@@ -25,5 +30,5 @@ async function ticketErrorHandler(userId: number) {
 
 export const hotelsService = {
   getAllHotels,
-  getHotelById,
+  getHotelRooms,
 };
