@@ -6,17 +6,18 @@ async function getAllHotels(userId: number) {
   await ticketErrorHandler(userId);
 
   const hotels = await hotelsRepository.findAllHotels();
-  if (!hotels) throw notFoundError('No hotels found.');
+  if (hotels.length === 0) throw notFoundError('No hotels found.');
 
   return hotels;
 }
 
 async function getHotelRooms(hotelId: number, userId: number) {
+  const hotel = await hotelsRepository.findHotelById(hotelId);
+  if (!hotel) throw notFoundError('No hotel found from requested id');
+
   await ticketErrorHandler(userId);
 
   const hotelRooms = await hotelsRepository.findHotelRooms(hotelId);
-  if (hotelRooms.Rooms.length === 0) throw notFoundError('No hotel rooms found.');
-
   return hotelRooms;
 }
 
