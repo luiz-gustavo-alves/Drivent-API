@@ -1,13 +1,13 @@
 import { Ticket, TicketType } from '@prisma/client';
 import { ticketsRepository } from '@/repositories';
 import { notFoundError } from '@/errors';
-import { validateTicketEnrollment } from '@/utils/validate-utils';
+import { validateUserTicket } from '@/utils/validate-utils';
 
 export type CreateTicket = Pick<Ticket, 'ticketTypeId'>;
 export type TicketWithTypeDetails = Ticket & { TicketType: TicketType };
 
 async function getTicketsFromUser(userId: number) {
-  const { ticketByEnrollment } = await validateTicketEnrollment(userId, 'notFound');
+  const { ticketByEnrollment } = await validateUserTicket(userId, 'notFound');
 
   const ticketType = await ticketsRepository.findTicketTypeById(ticketByEnrollment.ticketTypeId);
   return { ...ticketByEnrollment, TicketType: ticketType };
@@ -24,7 +24,7 @@ async function createTicket(params: CreateTicket, userId: number): Promise<Ticke
   const ticketType = await ticketsRepository.findTicketTypeById(ticketTypeId);
   if (!ticketType) throw notFoundError('No tickets found from requested search.');
 
-  const { enrollment } = await validateTicketEnrollment(userId, 'conflict');
+  const { enrollment } = await validateUserTicket(userId, 'conflict');
 
   const ticket = await ticketsRepository.createTicket(ticketTypeId, enrollment.id);
   return { ...ticket, TicketType: ticketType };
