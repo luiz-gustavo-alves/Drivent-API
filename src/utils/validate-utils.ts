@@ -31,8 +31,9 @@ export async function validateUserTicket(
   if (!enrollment) throw enrollmentError();
 
   const ticketByEnrollment = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
-  if (ticketByEnrollment && error !== 'notFound') throw ticketError();
-  if (!ticketByEnrollment && error === 'notFound') throw ticketError();
+  if (ticketByEnrollment && error !== 'notFound' || !ticketByEnrollment && error === 'notFound') {
+    throw ticketError();
+  }
 
   if (checkHotel) {
     const ticketType = await ticketsRepository.findTicketTypeById(ticketByEnrollment.ticketTypeId);
