@@ -62,6 +62,18 @@ export function handleApplicationErrors(
     });
   }
 
+  if (err.name === 'CannotProocedBookingError') {
+    return res.status(httpStatus.FORBIDDEN).send({
+      message: err.message,
+    });
+  }
+
+  if (err.name === 'RoomCapacityExceedError') {
+    return res.status(httpStatus.FORBIDDEN).send({
+      message: err.message,
+    });
+  }
+
   if (err.name === 'EnrollmentNotFoundError') {
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
