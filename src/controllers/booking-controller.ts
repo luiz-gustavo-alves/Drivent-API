@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import httpStatus from 'http-status';
 import { AuthenticatedRequest } from '@/middlewares';
-import { bookingService, RoomId } from '@/services';
+import { bookingService, BookingBodySchema } from '@/services';
 
 export async function getBooking(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
@@ -12,15 +12,15 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
 
 export async function postMakeBooking(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  const { roomId } = req.body as RoomId;
+  const { roomId } = req.body as BookingBodySchema;
 
-  const bookingId = await bookingService.makeBooking(Number(roomId), userId);
+  const bookingId = await bookingService.makeBooking(roomId, userId);
   res.status(httpStatus.OK).send(bookingId);
 }
 
 export async function putTradeBooking(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  const { roomId } = req.body as RoomId;
+  const { roomId } = req.body as BookingBodySchema;
   const { bookingId } = req.params;
 
   const newBookingId = await bookingService.tradeBooking(roomId, userId, Number(bookingId));

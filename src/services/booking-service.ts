@@ -30,8 +30,6 @@ async function validateRoomBooking(
   status: 'makeBooking' | 'tradeBooking',
   bookingId?: number,
 ) {
-  if (!Number(roomId) || roomId <= 0) throw notFoundError('Room not found.');
-
   const room = await bookingRepository.getRoomById(roomId);
   if (!room) throw notFoundError('Room not found.');
 
@@ -51,7 +49,8 @@ async function validateRoomBooking(
   if (bookingsCounter >= room.capacity) throw roomCapacityExceedError();
 }
 
-export type RoomId = { roomId: number };
+export type BookingBodySchema = { roomId: number };
+export type BookingParamsSchema = { bookingId: number };
 
 export const bookingService = {
   getBooking,
