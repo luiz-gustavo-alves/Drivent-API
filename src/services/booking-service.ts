@@ -39,10 +39,10 @@ async function validateRoomBooking(
   }
 
   if (status === 'tradeBooking') {
-    if (!bookingId) throw cannotProocedBookingError();
-
     const booking = await bookingRepository.getBookingById(bookingId);
-    if (!booking || booking.userId !== userId || booking.roomId === room.id) throw cannotProocedBookingError();
+
+    if (!booking) throw cannotProocedBookingError();
+    if (booking.userId !== userId || booking.roomId === room.id) throw cannotProocedBookingError();
   }
 
   const bookingsCounter = await bookingRepository.getBookingsCounterByRoomId(room.id);

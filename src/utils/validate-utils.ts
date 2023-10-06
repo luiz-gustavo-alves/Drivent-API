@@ -31,7 +31,7 @@ export async function validateUserTicket(
   if (!enrollment) throw enrollmentError();
 
   const ticketByEnrollment = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
-  if (ticketByEnrollment && error !== 'notFound' || !ticketByEnrollment && error === 'notFound') {
+  if (ticketByEnrollment && error === 'conflict' || !ticketByEnrollment && error !== 'conflict') {
     throw ticketError();
   }
 
