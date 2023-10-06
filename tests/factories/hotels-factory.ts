@@ -1,12 +1,14 @@
 import faker from '@faker-js/faker';
-import { Hotel } from '@prisma/client';
+import { Hotel, Room } from '@prisma/client';
 import { prisma } from '@/config';
 
-export async function createRoom(hotelId: number) {
+export async function createRoom(hotelId: number, params: Partial<Room> = {}) {
+  const capacity = params.capacity >= 0 ? params.capacity : faker.datatype.number({ max: 200 });
+
   return await prisma.room.create({
     data: {
-      name: faker.company.companySuffix(),
-      capacity: faker.datatype.number(128),
+      name: params.name || faker.company.companySuffix(),
+      capacity,
       hotelId,
     },
   });
