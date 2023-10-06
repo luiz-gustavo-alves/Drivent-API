@@ -11,6 +11,8 @@ async function getBookingAndRoomByUserId(userId: number) {
     where: { userId: userId },
   });
 
+  if (!booking) return null;
+
   const room = await prisma.room.findUnique({
     where: { id: booking.roomId },
   });
@@ -56,7 +58,10 @@ async function create(roomId: number, userId: number) {
 async function tradeBooking(roomId: number, bookingId: number) {
   return await prisma.booking.update({
     where: { id: bookingId },
-    data: { roomId },
+    data: {
+      roomId,
+      updatedAt: new Date(),
+    },
   });
 }
 
