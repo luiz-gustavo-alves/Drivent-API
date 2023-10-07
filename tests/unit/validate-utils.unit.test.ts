@@ -2,7 +2,7 @@ import faker from '@faker-js/faker';
 import { ticketsRepository, enrollmentRepository } from '@/repositories';
 import * as utils from '@/utils/validate-utils';
 
-describe('validate-utils unity tests', () => {
+describe('validate-utils unit tests', () => {
   describe('validateUserTicket function', () => {
     describe('error param is set to "notFound"', () => {
       it('should throw NotFoundError when user has no enrollment', async () => {
