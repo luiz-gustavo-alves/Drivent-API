@@ -13,6 +13,7 @@ import {
   createBooking,
 } from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
+import { prisma } from '@/config';
 import app, { init } from '@/app';
 
 beforeAll(async () => {
@@ -221,10 +222,14 @@ describe('POST /booking', () => {
       const body = { roomId: room.id };
       const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
 
+      const booking = await prisma.booking.findUnique({
+        where: { id: response.body.bookingId },
+      });
+
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual(
         expect.objectContaining({
-          bookingId: expect.any(Number),
+          bookingId: booking.id,
         }),
       );
     });

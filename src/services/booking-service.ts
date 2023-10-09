@@ -14,7 +14,7 @@ async function makeBooking(roomId: number, userId: number) {
   await validateRoomBooking(roomId, userId, 'makeBooking');
 
   const booking = await bookingRepository.create(roomId, userId);
-  return { bookingId: booking.roomId };
+  return { bookingId: booking.id };
 }
 
 async function tradeBooking(roomId: number, userId: number, bookingId: number) {
